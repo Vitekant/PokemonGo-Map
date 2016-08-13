@@ -328,9 +328,17 @@ def parse_map(map_dict, step_location):
     for cell in cells:
         if config['parse_pokemon']:
             for p in cell.get('wild_pokemons', []):
+                try:
+                    val = int(p['time_till_hidden_ms'])
+                    if (val > 3600000 or val < 0):
+                        continue
+                except Exception:
+                    pass
+                    continue
+                
                 d_t = datetime.utcfromtimestamp(
                     (p['last_modified_timestamp_ms'] +
-                     p['time_till_hidden_ms']) / 1000.0)
+                     val) / 1000.0)
                 printPokemon(p['pokemon_data']['pokemon_id'], p['latitude'],
                              p['longitude'], d_t)
                 pokemons[p['encounter_id']] = {
